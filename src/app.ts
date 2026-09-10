@@ -12,6 +12,6 @@ app.use(express.json({
 // ROUTES IMPORT HERE
 import fileRoutes from "./routes/file.route.js"
 
-app.use("/api/files", fileRoutes);
+app.use("/api/v1/files", fileRoutes);
 
 export default app;
