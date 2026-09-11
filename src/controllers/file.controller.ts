@@ -23,7 +23,7 @@ export const uploadFile = asyncHandler(
 
     const file = await File.create({
       originalName: req.file.originalname,
-      storedName: cloudinaryResponse.public_id,
+      storedName: cloudinaryResponse.original_filename,
       mimeType: req.file.mimetype,
       size: req.file.size,
       uniqueId,
