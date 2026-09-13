@@ -6,11 +6,25 @@ export const files = {
     return response.data;
   },
 
-  post: async (file: File) => {
+  post: async (
+    file: File,
+    onProgress?: (progress: number) => void
+  ) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await api.post("/files", formData);
+    const response = await api.post("/files/upload", formData, {
+      onUploadProgress: (event) => {
+        if (event.total) {
+          const progress = Math.round(
+            (event.loaded * 100) / event.total
+          );
+
+          onProgress?.(progress);
+        }
+      },
+    });
+
     return response.data;
   },
 
