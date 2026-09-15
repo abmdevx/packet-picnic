@@ -32,7 +32,7 @@ export const uploadFile = asyncHandler(
 
     const shareUrl = `${req.protocol}://${req.get(
       "host"
-    )}/api/files/${file.uniqueId}`;
+    )}/api/v1/files/${file.uniqueId}`;
 
     return res.status(201).json(
       new ApiResponse(

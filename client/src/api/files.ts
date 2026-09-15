@@ -1,8 +1,8 @@
 import { api } from "./client";
 
 export const files = {
-  get: async () => {
-    const response = await api.get("/files");
+  get: async (uniqueId: string) => {
+    const response = await api.get(`/files/${uniqueId}`);
     return response.data;
   },
 

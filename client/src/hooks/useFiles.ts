@@ -17,7 +17,7 @@ export function useFiles() {
       const result = await files.post(file, setProgress);
 
       setProgress(100);
-      setFileUrl(result.data.downloadUrl);
+      setFileUrl(result.data.shareUrl);
 
       return result;
     } catch (error) {
