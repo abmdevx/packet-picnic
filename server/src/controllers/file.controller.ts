@@ -30,7 +30,7 @@ export const uploadFile = asyncHandler(
       storageUrl: cloudinaryResponse.secure_url,
     });
 
-    const downloadUrl = `${req.protocol}://${req.get(
+    const shareUrl = `${req.protocol}://${req.get(
       "host"
     )}/api/files/${file.uniqueId}`;
 
@@ -39,9 +39,34 @@ export const uploadFile = asyncHandler(
         201,
         {
           uniqueId: file.uniqueId,
-          downloadUrl,
+          shareUrl,
         },
         "File uploaded successfully"
+      )
+    );
+  }
+);
+
+export const getFile = asyncHandler(
+  async (req: Request<{ uniqueId: string }>, res: Response) => {
+    const { uniqueId } = req.params;
+
+    const file = await File.findOne({ uniqueId });
+
+    if (!file) {
+      throw new ApiError(404, "File not found");
+    }
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          originalName: file.originalName,
+          mimeType: file.mimeType,
+          size: file.size,
+          uniqueId: file.uniqueId,
+        },
+        "File found successfully"
       )
     );
   }
