@@ -30,10 +30,8 @@ export const uploadFile = asyncHandler(
       storageUrl: cloudinaryResponse.secure_url,
     });
 
-    const shareUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/files/${file.uniqueId}`;
-
+    const shareUrl = `${process.env.CLIENT_URL}/files/${file.uniqueId}`;
+    
     return res.status(201).json(
       new ApiResponse(
         201,
