@@ -69,3 +69,17 @@ export const getFile = asyncHandler(
     );
   }
 );
+
+export const downloadFile = asyncHandler(
+  async (req: Request<{ uniqueId: string }>, res: Response) => {
+    const { uniqueId } = req.params;
+
+    const file = await File.findOne({ uniqueId });
+
+    if (!file) {
+      throw new ApiError(404, "File not found");
+    }
+
+    return res.redirect(file.storageUrl);
+  }
+);
