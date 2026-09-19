@@ -5,7 +5,12 @@ interface IFile extends Document {
   storedName: string;
   mimeType: string;
   size: number;
+
   storageUrl: string;
+
+  cloudinaryPublicId: string;
+  cloudinaryResourceType: string;
+
   uniqueId: string;
   downloadCount: number;
 }
@@ -34,6 +39,16 @@ const fileSchema = new Schema<IFile>(
     },
 
     storageUrl: {
+      type: String,
+      required: true,
+    },
+
+    cloudinaryPublicId: {
+      type: String,
+      required: true,
+    },
+
+    cloudinaryResourceType: {
       type: String,
       required: true,
     },

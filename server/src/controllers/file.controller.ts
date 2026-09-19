@@ -27,7 +27,11 @@ export const uploadFile = asyncHandler(
       mimeType: req.file.mimetype,
       size: req.file.size,
       uniqueId,
+
       storageUrl: cloudinaryResponse.secure_url,
+
+      cloudinaryPublicId: cloudinaryResponse.public_id,
+      cloudinaryResourceType: cloudinaryResponse.resource_type,
     });
 
     const shareUrl = `${process.env.CLIENT_URL}/files/${file.uniqueId}`;
@@ -71,7 +75,10 @@ export const getFile = asyncHandler(
 );
 
 export const downloadFile = asyncHandler(
-  async (req: Request<{ uniqueId: string }>, res: Response) => {
+  async (
+    req: Request<{ uniqueId: string }>,
+    res: Response
+  ) => {
     const { uniqueId } = req.params;
 
     const file = await File.findOne({ uniqueId });
@@ -80,6 +87,29 @@ export const downloadFile = asyncHandler(
       throw new ApiError(404, "File not found");
     }
 
-    return res.redirect(file.storageUrl);
+    const response = await fetch(file.storageUrl);
+
+    if (!response.ok) {
+      throw new ApiError(500, "Failed to fetch file");
+    }
+
+    await File.findOneAndUpdate(
+      { uniqueId },
+      { $inc: { downloadCount: 1 } }
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${file.originalName}"`
+    );
+
+    res.setHeader(
+      "Content-Type",
+      file.mimeType
+    );
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    return res.send(buffer);
   }
 );
