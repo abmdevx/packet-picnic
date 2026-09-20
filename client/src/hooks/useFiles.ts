@@ -45,7 +45,7 @@ export function useFiles() {
       setError(null);
       setFile(null);
 
-      const result = await files.get(uniqueId);
+      const result = await files.getInfo(uniqueId);
 
       setFile(result.data);
 
@@ -61,9 +61,29 @@ export function useFiles() {
     }
   };
 
+  const downloadFile = async (uniqueId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await files.download(uniqueId);
+
+      return result;
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to download file"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     upload,
     getFile,
+    downloadFile,
     loading,
     progress,
     error,

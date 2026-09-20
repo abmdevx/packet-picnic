@@ -1,9 +1,17 @@
 import { api } from "./client";
 
 export const files = {
-  get: async (uniqueId: string) => {
+  getInfo: async (uniqueId: string) => {
     const response = await api.get(`/files/${uniqueId}`);
     return response.data;
+  },
+
+  download: async (uniqueId: string) => {
+    const response = await api.get(`/files/${uniqueId}/download`, {
+      responseType: "blob",
+    });
+
+    return response;
   },
 
   post: async (

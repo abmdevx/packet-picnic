@@ -12,13 +12,47 @@ import { Button } from "@/components/ui/button";
 
 const SharedFile = () => {
   const { uniqueId } = useParams();
-  const { getFile, file, loading, error } = useFiles();
+  const { getFile, file, loading, error, downloadFile } = useFiles();
 
   useEffect(() => {
     if (!uniqueId) return;
 
     getFile(uniqueId);
   }, [uniqueId]);
+
+  const formatFileSize = (size: number) => {
+    if (size < 1000 * 1000) {
+      return `${(size / 1000).toFixed(2)} KB`;
+    }
+
+    if (size < 1000 * 1000 * 1000) {
+      return `${(size / (1000 * 1000)).toFixed(2)} MB`;
+    }
+
+    return `${(size / (1000 * 1000 * 1000)).toFixed(2)} GB`;
+  };
+
+  const handleDownloadFile = async () => {
+    if (!uniqueId || !file) return;
+
+    const response = await downloadFile(uniqueId);
+
+    if (!response) return;
+
+    const url = URL.createObjectURL(response.data);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = file.originalName;
+
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+  };
 
   if (loading) {
     return (
@@ -71,11 +105,15 @@ const SharedFile = () => {
             <p className="text-sm text-muted-foreground">
               Size
             </p>
-            <p>{(file.size / 1000).toFixed(2)} kb</p>
+            <p>{formatFileSize(file.size)}</p>
           </div>
 
-          <Button className="w-full" disabled>
-            Download File
+          <Button
+            className="w-full"
+            disabled={loading}
+            onClick={handleDownloadFile}
+          >
+            {loading ? "Downloading..." : "Download File"}
           </Button>
         </CardContent>
       </Card>
