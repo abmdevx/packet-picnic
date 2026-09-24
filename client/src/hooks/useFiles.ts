@@ -6,6 +6,7 @@ type FileData = {
   mimeType: string;
   size: number;
   uniqueId: string;
+  shareUrl: string;
 };
 
 export function useFiles() {
@@ -26,6 +27,7 @@ export function useFiles() {
 
       setProgress(100);
       setFileUrl(result.data.shareUrl);
+      setFile(result.data);
 
       return result;
     } catch (error) {

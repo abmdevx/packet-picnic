@@ -1,33 +1,37 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { saveFile, type StoredFile, getFiles } from "@/utils/storage";
 import { useFiles } from "@/hooks/useFiles";
 
 export default function FileUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedFileId, setCopiedFileId] = useState<string | null>(null);
+  const [storedFiles, setStoredFiles] = useState<StoredFile[]>([]);
 
   const {
     upload,
     loading,
     progress,
     error,
-    fileUrl,
   } = useFiles();
 
-  const handleCopy = async () => {
-    if (!fileUrl) return;
+  useEffect(() => {
+    const files = getFiles();
+    setStoredFiles(files);
+  }, []);
 
-    await navigator.clipboard.writeText(fileUrl);
+  const handleCopy = async (file: StoredFile) => {
+    await navigator.clipboard.writeText(file.url);
 
-    setCopied(true);
+    setCopiedFileId(file.id);
 
     setTimeout(() => {
-      setCopied(false);
+      setCopiedFileId(null);
     }, 2000);
   };
 
@@ -39,7 +43,21 @@ export default function FileUploader() {
     if (!file) return;
 
     setSelectedFile(file);
-    await upload(file);
+
+    const result = await upload(file);
+
+    if (result) {
+      const newFile = {
+        id: result.data.uniqueId,
+        originalName: file.name,
+        url: result.data.shareUrl,
+        size: file.size,
+        uploadedAt: new Date().toISOString(),
+      };
+
+      saveFile(newFile);
+      setStoredFiles((prev) => [...prev, newFile]);
+    }
   };
 
   const handleChooseFile = () => {
@@ -96,25 +114,27 @@ export default function FileUploader() {
               </AlertDescription>
             </Alert>
           )}
-
-          {fileUrl && progress === 100 && (
-            <Alert>
-              <AlertDescription>
-                <div className="flex items-center justify-between gap-4">
-                  <span className="truncate">
-                    {selectedFile?.name}
+          {storedFiles.length > 0 && (
+            <div className="space-y-3">
+              {storedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center justify-between gap-4 rounded-md border p-3"
+                >
+                  <span className="truncate text-sm">
+                    {file.originalName}
                   </span>
 
                   <Button
                     type="button"
                     variant="default"
-                    onClick={handleCopy}
+                    onClick={() => handleCopy(file)}
                   >
-                    {copied ? "Copied!" : "Copy"}
+                    {copiedFileId === file.id ? "Copied!" : "Copy"}
                   </Button>
                 </div>
-              </AlertDescription>
-            </Alert>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>
