@@ -9,6 +9,7 @@ import { useFiles } from "@/hooks/useFiles";
 export default function FileUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const {
     upload,
@@ -17,6 +18,18 @@ export default function FileUploader() {
     error,
     fileUrl,
   } = useFiles();
+
+  const handleCopy = async () => {
+    if (!fileUrl) return;
+
+    await navigator.clipboard.writeText(fileUrl);
+
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -87,14 +100,19 @@ export default function FileUploader() {
           {fileUrl && progress === 100 && (
             <Alert>
               <AlertDescription>
-                <a
-                  href={fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline break-all"
-                >
-                  {fileUrl}
-                </a>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="truncate">
+                    {selectedFile?.name}
+                  </span>
+
+                  <Button
+                    type="button"
+                    variant="default"
+                    onClick={handleCopy}
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </Button>
+                </div>
               </AlertDescription>
             </Alert>
           )}
