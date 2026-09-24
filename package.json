@@ -1,0 +1,10 @@
+{
+  "name": "packet-picnic",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n CLIENT,SERVER -c green,yellow \"npm run dev --prefix client\" \"npm run dev --prefix server\""  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
