@@ -85,7 +85,30 @@ const deleteFromCloudinary = async (
   }
 };
 
+const generateUploadSignature = (timestamp: number) => {
+  return cloudinary.utils.api_sign_request(
+    {
+      timestamp,
+    },
+    env.CLOUDINARY_API_SECRET
+  );
+};
+
+const generateDownloadUrl = (
+  publicId: string,
+  resourceType: string
+) => {
+  return cloudinary.url(publicId, {
+    resource_type: resourceType,
+    type: "upload",
+    secure: true,
+    sign_url: true,
+  });
+};
+
 export {
   uploadOnCloudinary,
   deleteFromCloudinary,
+  generateUploadSignature,
+  generateDownloadUrl
 };

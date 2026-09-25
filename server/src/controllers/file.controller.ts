@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { generateUploadSignature, uploadOnCloudinary, generateDownloadUrl } from "../utils/cloudinary.js";
 import { File } from "../models/file.model.js";
 
 export const uploadFile = asyncHandler(
@@ -88,29 +88,44 @@ export const downloadFile = asyncHandler(
       throw new ApiError(404, "File not found");
     }
 
-    const response = await fetch(file.storageUrl);
-
-    if (!response.ok) {
-      throw new ApiError(500, "Failed to fetch file");
-    }
+    const downloadUrl = generateDownloadUrl(
+      file.cloudinaryPublicId,
+      file.cloudinaryResourceType
+    );
 
     await File.findOneAndUpdate(
       { uniqueId },
       { $inc: { downloadCount: 1 } }
     );
 
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${file.originalName}"`
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          downloadUrl,
+          originalName: file.originalName,
+        },
+        "Download URL generated successfully"
+      )
     );
+  }
+);
 
-    res.setHeader(
-      "Content-Type",
-      file.mimeType
+export const getUploadSignature = asyncHandler(
+  async (req: Request, res: Response) => {
+    const timestamp = Math.round(Date.now() / 1000);
+
+    const signature = generateUploadSignature(timestamp);
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          timestamp,
+          signature,
+        },
+        "Upload signature generated successfully"
+      )
     );
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-
-    return res.send(buffer);
   }
 );
