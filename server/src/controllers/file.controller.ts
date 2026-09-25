@@ -67,6 +67,7 @@ export const getFile = asyncHandler(
           mimeType: file.mimeType,
           size: file.size,
           uniqueId: file.uniqueId,
+          downloadCount: file.downloadCount,
         },
         "File found successfully"
       )

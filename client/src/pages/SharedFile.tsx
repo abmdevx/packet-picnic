@@ -108,6 +108,13 @@ const SharedFile = () => {
             <p>{formatFileSize(file.size)}</p>
           </div>
 
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Download Count:
+            </p>
+            <p>{file.downloadCount}</p>
+          </div>
+
           <Button
             className="w-full"
             disabled={loading}

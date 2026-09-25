@@ -7,6 +7,7 @@ type FileData = {
   size: number;
   uniqueId: string;
   shareUrl: string;
+  downloadCount: number
 };
 
 export function useFiles() {
