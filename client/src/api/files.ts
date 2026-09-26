@@ -7,12 +7,9 @@ export const files = {
   },
 
   download: async (uniqueId: string) => {
-    const response = await api.get(`/files/${uniqueId}/download`, {
-      responseType: "blob",
-    });
-
-    return response;
-  },
+    const response = await api.get(`/files/${uniqueId}/download`);
+    return response.data;
+},
 
   post: async (
     file: File,

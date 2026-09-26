@@ -10,12 +10,13 @@ cloudinary.config({
   api_secret: env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath: string) => {
+const uploadOnCloudinary = async (localFilePath: string, originalName: string) => {
   try {
     if (!localFilePath) return null;
 
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "raw",
+      filename_override: originalName,
     });
 
     // Remove temporary local file after successful upload
@@ -103,6 +104,7 @@ const generateDownloadUrl = (
     type: "upload",
     secure: true,
     sign_url: true,
+    flags: "attachment",
   });
 };
 

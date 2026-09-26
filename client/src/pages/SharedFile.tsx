@@ -39,19 +39,13 @@ const SharedFile = () => {
 
     if (!response) return;
 
-    const url = URL.createObjectURL(response.data);
-
     const link = document.createElement("a");
-
-    link.href = url;
-    link.download = file.originalName;
+    link.href = response.data.downloadUrl;
+    link.download = response.data.originalName;
 
     document.body.appendChild(link);
     link.click();
-
     link.remove();
-
-    URL.revokeObjectURL(url);
   };
 
   if (loading) {

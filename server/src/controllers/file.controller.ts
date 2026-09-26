@@ -13,7 +13,7 @@ export const uploadFile = asyncHandler(
       throw new ApiError(400, "File is required");
     }
 
-    const cloudinaryResponse = await uploadOnCloudinary(req.file.path);
+    const cloudinaryResponse = await uploadOnCloudinary(req.file.path, req.file.originalname);
 
     if (!cloudinaryResponse) {
       throw new ApiError(500, "File upload failed");
