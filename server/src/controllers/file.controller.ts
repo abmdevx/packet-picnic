@@ -7,48 +7,6 @@ import ApiResponse from "../utils/apiResponse.js";
 import { generateUploadSignature, uploadOnCloudinary, generateDownloadUrl } from "../utils/cloudinary.js";
 import { File } from "../models/file.model.js";
 
-export const uploadFile = asyncHandler(
-  async (req: Request, res: Response) => {
-    if (!req.file) {
-      throw new ApiError(400, "File is required");
-    }
-
-    const cloudinaryResponse = await uploadOnCloudinary(req.file.path, req.file.originalname);
-
-    if (!cloudinaryResponse) {
-      throw new ApiError(500, "File upload failed");
-    }
-
-    const uniqueId = nanoid(10);
-
-    const file = await File.create({
-      originalName: req.file.originalname,
-      storedName: cloudinaryResponse.original_filename,
-      mimeType: req.file.mimetype,
-      size: req.file.size,
-      uniqueId,
-
-      storageUrl: cloudinaryResponse.secure_url,
-
-      cloudinaryPublicId: cloudinaryResponse.public_id,
-      cloudinaryResourceType: cloudinaryResponse.resource_type,
-    });
-
-    const shareUrl = `${process.env.CLIENT_URL}/files/${file.uniqueId}`;
-    
-    return res.status(201).json(
-      new ApiResponse(
-        201,
-        {
-          uniqueId: file.uniqueId,
-          shareUrl,
-        },
-        "File uploaded successfully"
-      )
-    );
-  }
-);
-
 export const getFile = asyncHandler(
   async (req: Request<{ uniqueId: string }>, res: Response) => {
     const { uniqueId } = req.params;
@@ -106,6 +64,58 @@ export const downloadFile = asyncHandler(
           originalName: file.originalName,
         },
         "Download URL generated successfully"
+      )
+    );
+  }
+);
+
+export const saveUploadedFile = asyncHandler(
+  async (req: Request, res: Response) => {
+    const {
+      originalName,
+      storedName,
+      mimeType,
+      size,
+      storageUrl,
+      cloudinaryPublicId,
+      cloudinaryResourceType,
+    } = req.body;
+
+    if (
+      !originalName ||
+      !storedName ||
+      !mimeType ||
+      !size ||
+      !storageUrl ||
+      !cloudinaryPublicId ||
+      !cloudinaryResourceType
+    ) {
+      throw new ApiError(400, "Required file metadata is missing");
+    }
+
+    const uniqueId = nanoid(10);
+
+    const file = await File.create({
+      originalName,
+      storedName,
+      mimeType,
+      size,
+      storageUrl,
+      cloudinaryPublicId,
+      cloudinaryResourceType,
+      uniqueId,
+    });
+
+    const shareUrl = `${process.env.CLIENT_URL}/files/${file.uniqueId}`;
+
+    return res.status(201).json(
+      new ApiResponse(
+        201,
+        {
+          uniqueId: file.uniqueId,
+          shareUrl,
+        },
+        "File metadata saved successfully"
       )
     );
   }
