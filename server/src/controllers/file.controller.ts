@@ -81,18 +81,6 @@ export const saveUploadedFile = asyncHandler(
       cloudinaryResourceType,
     } = req.body;
 
-    if (
-      !originalName ||
-      !storedName ||
-      !mimeType ||
-      !size ||
-      !storageUrl ||
-      !cloudinaryPublicId ||
-      !cloudinaryResourceType
-    ) {
-      throw new ApiError(400, "Required file metadata is missing");
-    }
-
     const uniqueId = nanoid(10);
 
     const file = await File.create({
