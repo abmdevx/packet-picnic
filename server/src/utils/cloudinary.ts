@@ -10,44 +10,6 @@ cloudinary.config({
   api_secret: env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath: string, originalName: string) => {
-  try {
-    if (!localFilePath) return null;
-
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "raw",
-      filename_override: originalName,
-    });
-
-    // Remove temporary local file after successful upload
-    try {
-        fs.unlinkSync(localFilePath);
-    } catch (cleanupError) {
-        console.error("Failed to remove temporary file:", cleanupError);
-    }
-
-    return response;
-  } catch (error) {
-    // Remove temporary local file if Cloudinary upload fails
-    try {
-        fs.unlinkSync(localFilePath);
-    } catch (cleanupError) {
-        console.error("Failed to remove temporary file:", cleanupError);
-    }
-
-    if (error instanceof ApiError) {
-      throw error;
-    }
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Error uploading file to Cloudinary";
-
-    throw new ApiError(500, message);
-  }
-};
-
 const deleteFromCloudinary = async (
   public_id: string,
   resourceType = "image"
@@ -109,7 +71,6 @@ const generateDownloadUrl = (
 };
 
 export {
-  uploadOnCloudinary,
   deleteFromCloudinary,
   generateUploadSignature,
   generateDownloadUrl

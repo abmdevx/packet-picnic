@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
-import { generateUploadSignature, uploadOnCloudinary, generateDownloadUrl } from "../utils/cloudinary.js";
+import { generateUploadSignature, generateDownloadUrl } from "../utils/cloudinary.js";
 import { File } from "../models/file.model.js";
 
 export const getFile = asyncHandler(
