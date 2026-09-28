@@ -1,18 +1,16 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
-interface IFile extends Document {
+export interface IFile extends Document {
   originalName: string;
   storedName: string;
   mimeType: string;
   size: number;
-
   storageUrl: string;
-
   cloudinaryPublicId: string;
   cloudinaryResourceType: string;
-
   uniqueId: string;
   downloadCount: number;
+  owner: Types.ObjectId;
 }
 
 const fileSchema = new Schema<IFile>(
@@ -62,6 +60,12 @@ const fileSchema = new Schema<IFile>(
     downloadCount: {
       type: Number,
       default: 0,
+    },
+
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   {

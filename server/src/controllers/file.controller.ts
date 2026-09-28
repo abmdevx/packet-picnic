@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { nanoid } from "nanoid";
-
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
@@ -8,7 +7,10 @@ import { generateUploadSignature, generateDownloadUrl } from "../utils/cloudinar
 import { File } from "../models/file.model.js";
 
 export const getFile = asyncHandler(
-  async (req: Request<{ uniqueId: string }>, res: Response) => {
+  async (
+    req: Request<{ uniqueId: string }>,
+    res: Response
+  ) => {
     const { uniqueId } = req.params;
 
     const file = await File.findOne({ uniqueId });
@@ -84,6 +86,7 @@ export const saveUploadedFile = asyncHandler(
     const uniqueId = nanoid(10);
 
     const file = await File.create({
+      owner: req.user!._id,
       originalName,
       storedName,
       mimeType,
