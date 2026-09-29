@@ -19,7 +19,7 @@ import Typewriter from "typewriter-effect";
 import { Button } from "@/components/ui/button";
 
 const LOGO_URL =
-  "https://res.cloudinary.com/drkhlh0gd/image/upload/v1790490826/logo_yz7vqp.png";
+  `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload/v1790490826/logo_yz7vqp.png`;
 
 const HomePage = () => {
   return (
@@ -91,7 +91,7 @@ const HomePage = () => {
           }}
         />
 
-        <div className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-[350px] w-[90%] max-w-[700px] -translate-x-1/2 rounded-full bg-primary/10 blur-[110px] sm:h-[500px]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-87.5 w-[90%] max-w-175 -translate-x-1/2 rounded-full bg-primary/10 blur-[110px] sm:h-125" />
 
         <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
@@ -152,13 +152,13 @@ const HomePage = () => {
             </div>
 
             {/* Animated File Network — hidden on small phones, shown from sm up */}
-            <div className="relative mx-auto hidden h-[380px] w-full max-w-[560px] sm:block lg:h-[430px]">
+            <div className="relative mx-auto hidden h-95 w-full max-w-140 sm:block lg:h-107.5">
               <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
               <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-muted-foreground/20" />
               <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-muted-foreground/10" />
 
-              <div className="absolute left-[22%] top-1/2 h-px w-[28%] -rotate-[18deg] bg-border" />
-              <div className="absolute right-[22%] top-1/2 h-px w-[28%] rotate-[18deg] bg-border" />
+              <div className="absolute left-[22%] top-1/2 h-px w-[28%] rotate-[-18deg] bg-border" />
+              <div className="absolute right-[22%] top-1/2 h-px w-[28%] rotate-18 bg-border" />
               <div className="absolute bottom-[22%] left-1/2 h-[25%] w-px -translate-x-1/2 bg-border" />
 
               <div className="absolute left-[7%] top-[22%] animate-[float_4s_ease-in-out_infinite]">
@@ -485,7 +485,7 @@ const ProcessStepper = () => {
                   {step.title}
                 </p>
 
-                <p className="mt-1 hidden max-w-[9rem] text-xs leading-5 text-muted-foreground sm:block">
+                <p className="mt-1 hidden max-w-36 text-xs leading-5 text-muted-foreground sm:block">
                   {step.description}
                 </p>
               </div>

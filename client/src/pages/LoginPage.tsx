@@ -1,18 +1,33 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useGoogleLogin } from "@react-oauth/google";
+import { useAuth } from "@/hooks/useAuth";
 import { FaGoogle, FaGithub, FaXTwitter } from "react-icons/fa6";
 
 const LoginPage = () => {
-  const googleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      console.log("Google login successful:", tokenResponse);
-    },
-    onError: () => {
-      console.log("Google login failed");
-    },
-  });
+
+  const googleInitialized = useRef(false);
+  const { login } = useAuth();
+
+  useEffect(() => {
+  if (!window.google || googleInitialized.current) {
+    return;
+  }
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+
+      callback: async (response) => {
+        await login(response.credential);
+      },
+    });
+
+    googleInitialized.current = true;
+  }, [login]);
+
+  const handleGoogleLogin = () => {
+    window.google.accounts.id.prompt();
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6">
@@ -29,7 +44,7 @@ const LoginPage = () => {
         {/* Logo */}
         <div className="mb-8 flex justify-center">
           <img
-            src="https://res.cloudinary.com/drkhlh0gd/image/upload/v1790490826/logo_yz7vqp.png"
+            src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload/v1790490826/logo_yz7vqp.png`}
             alt="Packet Picnic"
             className="h-16 w-auto object-contain"
           />
@@ -51,7 +66,7 @@ const LoginPage = () => {
           <Button
             variant="outline"
             className="h-11 w-full justify-center"
-            onClick={() => googleLogin()}
+            onClick={handleGoogleLogin}
           >
             <FaGoogle className="mr-3 h-4 w-4" />
             Continue with Google
