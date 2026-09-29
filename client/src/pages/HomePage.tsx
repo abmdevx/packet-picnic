@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -356,20 +357,7 @@ const HomePage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-7 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="flex items-center gap-3">
-            <img src={LOGO_URL} alt="Packet Picnic" className="h-8 w-auto object-contain" />
-            <span>© {new Date().getFullYear()} Packet Picnic</span>
-          </div>
-
-          <div className="flex gap-5">
-            <a href="#home" className="transition-colors hover:text-foreground">Home</a>
-            <a href="#features" className="transition-colors hover:text-foreground">Features</a>
-            <a href="#how-it-works" className="transition-colors hover:text-foreground">How it works</a>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
 
       <style>{`
         @keyframes float {
