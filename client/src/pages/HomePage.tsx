@@ -55,12 +55,6 @@ const HomePage = () => {
             >
               How it works
             </a>
-            <a
-              href="#contact"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Contact
-            </a>
           </div>
 
           <div className="flex items-center gap-2">
@@ -326,32 +320,6 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section id="contact" className="border-t">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
-          <div className="relative overflow-hidden rounded-3xl border bg-muted/20 px-6 py-14 text-center sm:px-12 sm:py-20">
-            <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-96 -translate-x-1/2 rounded-full bg-primary/10 blur-[100px]" />
-
-            <p className="relative text-sm font-medium text-primary">Packet Picnic</p>
-            <h2 className="relative mx-auto mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-6xl">
-              Stop moving files around.
-              <br />
-              <span className="text-muted-foreground">Start sharing them.</span>
-            </h2>
-            <p className="relative mx-auto mt-6 max-w-xl leading-7 text-muted-foreground">
-              Upload your first file and experience a simpler way to share.
-            </p>
-
-            <Link to="/login" className="relative mt-9 inline-block">
-              <Button size="lg">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
