@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +9,7 @@ const LoginPage = () => {
 
   const googleInitialized = useRef(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
   if (!window.google || googleInitialized.current) {
@@ -19,6 +20,7 @@ const LoginPage = () => {
 
       callback: async (response) => {
         await login(response.credential);
+        navigate("/dashboard", { replace: true });
       },
     });
 
