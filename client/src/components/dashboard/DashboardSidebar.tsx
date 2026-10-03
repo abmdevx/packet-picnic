@@ -1,16 +1,12 @@
 import { NavLink } from "react-router-dom";
 import {
   Files,
-  Clock3,
-  Share2,
   Trash2,
   Home,
 } from "lucide-react";
 
 const menuItems = [
   { label: "My Files", path: "/dashboard", icon: Files },
-  { label: "Recent Files", path: "/dashboard/recent", icon: Clock3 },
-  { label: "Shared Files", path: "/dashboard/shared", icon: Share2 },
   { label: "Trash", path: "/dashboard/trash", icon: Trash2 },
 ];
 

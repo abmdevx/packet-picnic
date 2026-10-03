@@ -6,8 +6,6 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 const pageTitles: Record<string, string> = {
   "/dashboard": "My Files",
   "/dashboard/upload": "Upload Files",
-  "/dashboard/recent": "Recent Files",
-  "/dashboard/shared": "Shared Files",
   "/dashboard/trash": "Trash",
 };
 

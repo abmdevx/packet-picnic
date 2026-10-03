@@ -13,7 +13,6 @@ import LoginPage from "./pages/LoginPage";
 import DashboardLayout from "./layout/DashboardLayout";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import UploadPage from "./pages/dashboard/UploadPage";
-import RecentFilesPage from "./pages/dashboard/RecentFilesPage";
 import SharedFilesPage from "./pages/dashboard/SharedFilesPage";
 import TrashPage from "./pages/dashboard/TrashPage";
 
@@ -24,11 +23,17 @@ function ProtectedRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  return isAuthenticated
-    ? <>{children}</>
-    : <Navigate to="/login" replace />;
+  if (isLoading) {
+    return null;
+  }
+
+  return isAuthenticated ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" replace />
+  );
 }
 
 function App() {
@@ -49,8 +54,6 @@ function App() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="upload" element={<UploadPage />} />
-          <Route path="recent" element={<RecentFilesPage />} />
-          <Route path="shared" element={<SharedFilesPage />} />
           <Route path="trash" element={<TrashPage />} />
         </Route>
 
