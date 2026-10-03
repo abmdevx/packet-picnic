@@ -59,3 +59,24 @@ export const googleLogin = asyncHandler(
     );
   }
 );
+
+export const getCurrentUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          _id: req.user._id,
+          name: req.user.name,
+          email: req.user.email,
+          picture: req.user.picture,
+        },
+        "User fetched successfully"
+      )
+    );
+  }
+);
