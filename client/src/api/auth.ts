@@ -25,3 +25,14 @@ export const googleLogin = async (credential: string) => {
 
   return response.data.data;
 };
+
+export const getCurrentUser = async () => {
+  const response = await api.get<{
+    statusCode: number;
+    data: AuthUser;
+    message: string;
+    success: boolean;
+  }>("/users/me");
+
+  return response.data.data;
+};
