@@ -1,52 +1,72 @@
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { FaGoogle, FaGithub, FaXTwitter } from "react-icons/fa6";
 
 const LoginPage = () => {
-
+  const googleButtonRef = useRef<HTMLDivElement>(null);
   const googleInitialized = useRef(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-  if (!window.google || googleInitialized.current) {
-    return;
-  }
+    if (
+      !window.google ||
+      !googleButtonRef.current ||
+      googleInitialized.current
+    ) {
+      return;
+    }
+
     window.google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
 
       callback: async (response) => {
-        await login(response.credential);
-        navigate("/dashboard", { replace: true });
+        try {
+          await login(response.credential);
+
+          navigate("/dashboard", {
+            replace: true,
+          });
+        } catch (error) {
+          console.error("Google login failed:", error);
+        }
       },
     });
 
-    googleInitialized.current = true;
-  }, [login]);
+    window.google.accounts.id.renderButton(googleButtonRef.current, {
+      type: "standard",
+      theme: "filled_black",
+      size: "large",
+      text: "continue_with",
+      shape: "circle",
+      logo_alignment: "left",
+      width: 384,
+    });
 
-  const handleGoogleLogin = () => {
-    window.google.accounts.id.prompt();
-  };
+    googleInitialized.current = true;
+  }, [login, navigate]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-6">
-      <div className="w-full max-w-sm">
-        {/* Back */}
-        <Link
-          to="/"
-          className="mb-10 inline-flex items-center text-sm text-muted-foreground transition hover:text-foreground"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to home
-        </Link>
+    <main className="relative flex min-h-screen items-center justify-center bg-background px-6">
+      {/* Back to Home */}
+      <Link
+        to="/"
+        className="absolute left-6 top-6 inline-flex items-center text-sm text-muted-foreground transition hover:text-foreground"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to home
+      </Link>
 
+      {/* Login Content */}
+      <div className="w-full max-w-sm">
         {/* Logo */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-6 flex justify-center">
           <img
-            src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload/v1790490826/logo_yz7vqp.png`}
+            src={`https://res.cloudinary.com/${
+              import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+            }/image/upload/v1790490826/logo_yz7vqp.png`}
             alt="Packet Picnic"
             className="h-16 w-auto object-contain"
           />
@@ -63,48 +83,9 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Login Buttons */}
-        <div className="mt-8 space-y-3">
-          <Button
-            variant="outline"
-            className="h-11 w-full justify-center"
-            onClick={handleGoogleLogin}
-          >
-            <FaGoogle className="mr-3 h-4 w-4" />
-            Continue with Google
-          </Button>
-
-          <Button
-            variant="outline"
-            className="h-11 w-full justify-center"
-            onClick={() => {
-              console.log("GitHub login coming soon");
-            }}
-          >
-            <FaGithub className="mr-3 h-4 w-4" />
-            Continue with GitHub
-          </Button>
-
-          <Button
-            variant="outline"
-            className="h-11 w-full justify-center"
-            onClick={() => {
-              console.log("X login coming soon");
-            }}
-          >
-            <FaXTwitter className="mr-3 h-4 w-4" />
-            Continue with X
-          </Button>
-        </div>
-
-        {/* Guest */}
-        <div className="mt-8 text-center">
-          <Link
-            to="/upload"
-            className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-          >
-            Continue without an account
-          </Link>
+        {/* Google Login */}
+        <div className="mt-6 flex justify-center">
+          <div ref={googleButtonRef} />
         </div>
       </div>
     </main>
