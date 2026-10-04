@@ -4,16 +4,15 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-
 import { Toaster } from "@/components/ui/sonner";
 
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-
 import DashboardLayout from "./layout/DashboardLayout";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import SharedFilesPage from "./pages/dashboard/SharedFilesPage";
 import TrashPage from "./pages/dashboard/TrashPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 import { useAuth } from "./hooks/useAuth";
 
@@ -39,10 +38,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/files/:uniqueId" element={<SharedFilesPage />} />
 
+        {/* Protected Dashboard Routes */}
         <Route
           path="/dashboard"
           element={
@@ -55,12 +56,8 @@ function App() {
           <Route path="trash" element={<TrashPage />} />
         </Route>
 
-        <Route
-          path="/upload"
-          element={<Navigate to="/dashboard/upload" replace />}
-        />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* 404 Not Found */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       <Toaster />

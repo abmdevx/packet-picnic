@@ -1,52 +1,60 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft, Home, PackageX } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Home, ArrowLeft } from "lucide-react";
+
+const LOGO_URL = `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload/v1790490826/logo_yz7vqp.png`;
 
 const NotFoundPage = () => {
+  const navigate = useNavigate();
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md text-center">
-        <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <PackageX className="size-8" />
+
+        {/* Logo */}
+        <div className="mb-8 flex justify-center">
+          <img
+            src={LOGO_URL}
+            alt="Packet Picnic"
+            className="h-24 w-auto object-contain"
+          />
         </div>
 
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
-          Error 404
-        </p>
+        {/* 404 */}
+        <div>
+          <h1 className="text-7xl font-bold tracking-tight">
+            404
+          </h1>
 
-        <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-          Page not found
-        </h1>
+          <h2 className="mt-3 text-xl font-semibold">
+            Page not found
+          </h2>
 
-        <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-          Oops! The page you're looking for doesn't exist,
-          may have been moved, or the URL is incorrect.
-        </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            The page you're looking for doesn't exist or may have been moved.
+          </p>
+        </div>
 
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        {/* Actions */}
+        <div className="mt-7 flex justify-center gap-2">
+          <Button onClick={() => navigate("/")}>
+            <Home className="mr-2 size-4" />
+            Go Home
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => navigate(-1)}
           >
-            <Home className="size-4" />
-            Back to Home
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="inline-flex items-center justify-center gap-2 rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Go Back
-          </button>
+          </Button>
         </div>
 
-        <p className="mt-12 text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">
-            Packet Picnic
-          </span>{" "}
-          · Share files, simply.
-        </p>
+        {/* Footer */}
+        <footer className="mt-10 text-center text-[11px] text-muted-foreground/60">
+          Fast file sharing, without the hassle.
+        </footer>
       </div>
     </main>
   );
