@@ -6,8 +6,10 @@ type FileData = {
   mimeType: string;
   size: number;
   uniqueId: string;
-  shareUrl: string;
-  downloadCount: number
+  shareUrl?: string;
+  downloadCount: number;
+  storageUrl?: string;
+  createdAt?: string;
 };
 
 export function useFiles() {
@@ -16,6 +18,7 @@ export function useFiles() {
   const [error, setError] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [file, setFile] = useState<FileData | null>(null);
+  const [allFiles, setAllFiles] = useState<FileData[]>([]);
 
   const upload = async (file: File) => {
     try {
@@ -64,6 +67,27 @@ export function useFiles() {
     }
   };
 
+  const getAllFiles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await files.getAllFiles();
+
+      setAllFiles(result.data);
+
+      return result;
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch files"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const downloadFile = async (uniqueId: string) => {
     try {
       setLoading(true);
@@ -86,11 +110,13 @@ export function useFiles() {
   return {
     upload,
     getFile,
+    getAllFiles,
     downloadFile,
     loading,
     progress,
     error,
     fileUrl,
     file,
+    allFiles,
   };
 }

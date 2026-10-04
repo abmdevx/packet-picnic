@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -14,45 +14,56 @@ import FileList from "@/components/dashboard/FileList";
 import FileUploader from "@/components/FileUploader";
 import type { FileItem } from "@/components/dashboard/FileCard";
 
+import { useFiles } from "@/hooks/useFiles";
+
 const DashboardPage = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  // Temporary data; replace with your API response later.
-  const [files, setFiles] = useState<FileItem[]>([
-    {
-      uniqueId: "demo-001",
-      originalName: "project-report.pdf",
-      size: 2450000,
-      mimeType: "application/pdf",
-      uploadedAt: new Date().toISOString(),
-      downloadCount: 12,
-    },
-    {
-      uniqueId: "demo-002",
-      originalName: "presentation.pptx",
-      size: 8200000,
-      mimeType:
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      uploadedAt: new Date().toISOString(),
-      downloadCount: 5,
-    },
-    {
-      uniqueId: "demo-003",
-      originalName: "profile-picture.png",
-      size: 850000,
-      mimeType: "image/png",
-      uploadedAt: new Date().toISOString(),
-      downloadCount: 2,
-    },
-  ]);
+  const [files, setFiles] = useState<FileItem[]>([]);
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [view, setView] = useState<"list" | "grid">("list");
 
+  const {
+    getAllFiles,
+    allFiles,
+    loading,
+    error,
+  } = useFiles();
+
+  /*
+   * Fetch user's files when dashboard loads
+   */
+  useEffect(() => {
+    getAllFiles();
+  }, []);
+
+  /*
+   * Convert API files into FileItem format
+   */
+  useEffect(() => {
+    const formattedFiles: FileItem[] = allFiles.map((file) => ({
+      uniqueId: file.uniqueId,
+      originalName: file.originalName,
+      size: file.size,
+      mimeType: file.mimeType,
+      uploadedAt: file.createdAt,
+      downloadCount: file.downloadCount,
+      storageUrl: file.storageUrl,
+    }));
+
+    setFiles(formattedFiles);
+  }, [allFiles]);
+
+  /*
+   * Search + Sort
+   */
   const filteredFiles = useMemo(() => {
     const result = files.filter((file) =>
-      file.originalName.toLowerCase().includes(search.toLowerCase())
+      file.originalName
+        .toLowerCase()
+        .includes(search.toLowerCase())
     );
 
     return [...result].sort((a, b) => {
@@ -64,7 +75,9 @@ const DashboardPage = () => {
           );
 
         case "name":
-          return a.originalName.localeCompare(b.originalName);
+          return a.originalName.localeCompare(
+            b.originalName
+          );
 
         case "size":
           return b.size - a.size;
@@ -78,21 +91,35 @@ const DashboardPage = () => {
     });
   }, [files, search, sort]);
 
+  /*
+   * Delete
+   */
   const handleDelete = (file: FileItem) => {
     setFiles((current) =>
-      current.filter((item) => item.uniqueId !== file.uniqueId)
+      current.filter(
+        (item) => item.uniqueId !== file.uniqueId
+      )
     );
 
-    toast.success(`${file.originalName} removed from this view.`);
+    toast.success(
+      `${file.originalName} removed from this view.`
+    );
   };
 
+  /*
+   * Download
+   */
   const handleDownload = (file: FileItem) => {
     if (!file.storageUrl) {
       toast.error("Download URL is not available.");
       return;
     }
 
-    window.open(file.storageUrl, "_blank", "noopener,noreferrer");
+    window.open(
+      file.storageUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   return (
@@ -111,7 +138,9 @@ const DashboardPage = () => {
 
         <span className="text-sm text-muted-foreground">
           {filteredFiles.length}{" "}
-          {filteredFiles.length === 1 ? "file" : "files"}
+          {filteredFiles.length === 1
+            ? "file"
+            : "files"}
         </span>
       </div>
 
@@ -126,19 +155,44 @@ const DashboardPage = () => {
         onUpload={() => setUploadOpen(true)}
       />
 
+      {/* Loading */}
+      {loading && files.length === 0 && (
+        <div className="flex justify-center p-8">
+          <p className="text-sm text-muted-foreground">
+            Loading your files...
+          </p>
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="p-6 text-center">
+          <p className="text-sm text-destructive">
+            {error}
+          </p>
+        </div>
+      )}
+
       {/* Files */}
-      <FileList
-        files={filteredFiles}
-        view={view}
-        onDelete={handleDelete}
-        onDownload={handleDownload}
-      />
+      {!loading && !error && (
+        <FileList
+          files={filteredFiles}
+          view={view}
+          onDelete={handleDelete}
+          onDownload={handleDownload}
+        />
+      )}
 
       {/* Upload Dialog */}
-      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+      <Dialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+      >
         <DialogContent className="w-[calc(100%-2rem)] sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Select files to upload</DialogTitle>
+            <DialogTitle>
+              Select files to upload
+            </DialogTitle>
 
             <DialogDescription>
               Upload a file and get a shareable link.

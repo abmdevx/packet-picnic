@@ -8,8 +8,8 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
+router.route("/get-all-files").get(authMiddleware, getAllFiles)
 router.route("/:uniqueId").get(getFile);
-router.route("/get-all-files").get(getAllFiles)
 router.route("/:uniqueId/download").get(downloadFile);
 router.route("/upload/signature").post(authMiddleware, getUploadSignature);
 router.route("/").post(authMiddleware, validate(fileSchema), saveUploadedFile);
