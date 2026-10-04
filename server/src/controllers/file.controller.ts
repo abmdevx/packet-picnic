@@ -130,3 +130,27 @@ export const getUploadSignature = asyncHandler(
     );
   }
 );
+
+export const getAllFiles = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const files = await File.find({
+      owner: req.user._id,
+    })
+      .sort({ createdAt: -1 })
+      .select(
+        "originalName mimeType size uniqueId downloadCount storageUrl createdAt"
+      );
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        files,
+        "Files fetched successfully"
+      )
+    );
+  }
+);
