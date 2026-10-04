@@ -8,7 +8,23 @@ export const files = {
   },
 
   download: async (uniqueId: string) => {
-    const response = await api.get(`/files/${uniqueId}/download`);
+    const response = await api.get(
+      `/files/${uniqueId}/download`
+    );
+
+    const { downloadUrl, originalName } = response.data.data;
+
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = originalName;
+    // link.target = "_blank";
+    link.rel = "noopener noreferrer";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
     return response.data;
   },
 
