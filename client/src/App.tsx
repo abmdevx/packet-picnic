@@ -12,7 +12,6 @@ import LoginPage from "./pages/LoginPage";
 
 import DashboardLayout from "./layout/DashboardLayout";
 import DashboardPage from "./pages/dashboard/DashboardPage";
-import UploadPage from "./pages/dashboard/UploadPage";
 import SharedFilesPage from "./pages/dashboard/SharedFilesPage";
 import TrashPage from "./pages/dashboard/TrashPage";
 
@@ -53,7 +52,6 @@ function App() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path="upload" element={<UploadPage />} />
           <Route path="trash" element={<TrashPage />} />
         </Route>
 

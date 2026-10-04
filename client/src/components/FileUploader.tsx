@@ -1,16 +1,32 @@
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { saveFile, type StoredFile, getFiles } from "@/utils/storage";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
+
+import {
+  saveFile,
+  type StoredFile,
+  getFiles,
+} from "@/utils/storage";
+
 import { useFiles } from "@/hooks/useFiles";
 
 export default function FileUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [copiedFileId, setCopiedFileId] = useState<string | null>(null);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(
+    null
+  );
+
+  const [copiedFileId, setCopiedFileId] = useState<string | null>(
+    null
+  );
+
   const [storedFiles, setStoredFiles] = useState<StoredFile[]>([]);
 
   const {
@@ -56,6 +72,7 @@ export default function FileUploader() {
       };
 
       saveFile(newFile);
+
       setStoredFiles((prev) => [...prev, newFile]);
     }
   };
@@ -65,79 +82,99 @@ export default function FileUploader() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardContent className="p-6 space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold">
-              Packet Picnic
-            </h1>
+    <div className="space-y-5">
+      {/* Hidden File Input */}
+      <Input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        onChange={handleFileChange}
+      />
 
-            <p className="text-sm text-muted-foreground">
-              Upload a file and get a shareable link.
-            </p>
+      {/* Upload Area */}
+      <button
+        type="button"
+        onClick={handleChooseFile}
+        disabled={loading}
+        className="flex w-full items-center justify-center rounded-lg border-2 border-dashed py-14 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-muted/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-50 sm:py-16"
+      >
+        <div className="text-center">
+          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-lg bg-muted">
+            <span className="text-3xl font-light">+</span>
           </div>
 
-          <Input
-            ref={inputRef}
-            type="file"
-            className="hidden"
-            onChange={handleFileChange}
-          />
+          <p className="text-sm font-medium">
+            {loading ? "Uploading..." : "Choose a file"}
+          </p>
 
-          <Button
-            className="w-full"
-            onClick={handleChooseFile}
-            disabled={loading}
-          >
-            {loading ? "Uploading..." : "Choose File"}
-          </Button>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Select a file from your device
+          </p>
+        </div>
+      </button>
 
-          {selectedFile && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="truncate">
-                  {selectedFile.name}
-                </span>
+      {/* Upload Progress */}
+      {selectedFile && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span
+              className="min-w-0 truncate"
+              title={selectedFile.name}
+            >
+              {selectedFile.name}
+            </span>
 
-                <span>{progress}%</span>
-              </div>
+            <span className="shrink-0 text-xs text-muted-foreground">
+              {progress}%
+            </span>
+          </div>
 
-              <Progress value={progress} />
+          <Progress value={progress} />
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Uploaded Files */}
+      {storedFiles.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">
+            Uploaded files
+          </p>
+
+          {storedFiles.map((file) => (
+            <div
+              key={file.id}
+              className="flex items-center gap-3 rounded-lg border p-3"
+            >
+              <span
+                className="min-w-0 flex-1 truncate text-sm"
+                title={file.originalName}
+              >
+                {file.originalName}
+              </span>
+
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleCopy(file)}
+              >
+                {copiedFileId === file.id
+                  ? "Copied!"
+                  : "Copy"}
+              </Button>
             </div>
-          )}
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-          {storedFiles.length > 0 && (
-            <div className="space-y-3">
-              {storedFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center justify-between gap-4 rounded-md border p-3"
-                >
-                  <span className="truncate text-sm">
-                    {file.originalName}
-                  </span>
-
-                  <Button
-                    type="button"
-                    variant="default"
-                    onClick={() => handleCopy(file)}
-                  >
-                    {copiedFileId === file.id ? "Copied!" : "Copy"}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </main>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

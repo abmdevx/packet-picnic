@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import {
   Search,
   ArrowDownAZ,
@@ -14,10 +13,14 @@ import { Button } from "@/components/ui/button";
 interface DashboardToolbarProps {
   search: string;
   onSearchChange: (value: string) => void;
+
   sort: string;
   onSortChange: (value: string) => void;
+
   view: "list" | "grid";
   onViewChange: (value: "list" | "grid") => void;
+
+  onUpload: () => void;
 }
 
 const DashboardToolbar = ({
@@ -27,13 +30,14 @@ const DashboardToolbar = ({
   onSortChange,
   view,
   onViewChange,
+  onUpload,
 }: DashboardToolbarProps) => {
-  const navigate = useNavigate();
-
   return (
     <div className="flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
+      {/* Search */}
       <div className="relative w-full lg:max-w-sm">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -42,9 +46,12 @@ const DashboardToolbar = ({
         />
       </div>
 
+      {/* Controls */}
       <div className="flex flex-wrap items-center gap-2">
+        {/* Sort */}
         <div className="flex items-center gap-2">
           <ArrowDownAZ className="size-4 text-muted-foreground" />
+
           <select
             value={sort}
             onChange={(e) => onSortChange(e.target.value)}
@@ -58,6 +65,7 @@ const DashboardToolbar = ({
           </select>
         </div>
 
+        {/* Filter */}
         <Button
           variant="outline"
           size="icon"
@@ -67,6 +75,7 @@ const DashboardToolbar = ({
           <Filter className="size-4" />
         </Button>
 
+        {/* View */}
         <div className="flex items-center rounded-lg border p-1">
           <Button
             variant={view === "list" ? "secondary" : "ghost"}
@@ -76,6 +85,7 @@ const DashboardToolbar = ({
           >
             <List className="size-4" />
           </Button>
+
           <Button
             variant={view === "grid" ? "secondary" : "ghost"}
             size="icon"
@@ -86,7 +96,8 @@ const DashboardToolbar = ({
           </Button>
         </div>
 
-        <Button onClick={() => navigate("/upload")}>
+        {/* Upload */}
+        <Button onClick={onUpload}>
           <Upload className="mr-2 size-4" />
           Upload
         </Button>

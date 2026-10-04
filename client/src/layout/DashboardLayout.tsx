@@ -5,7 +5,6 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "My Files",
-  "/dashboard/upload": "Upload Files",
   "/dashboard/trash": "Trash",
 };
 
@@ -33,13 +32,6 @@ const DashboardLayout = () => {
 
             <span className="font-medium">{title}</span>
           </div>
-
-          <Link
-            to="/dashboard/upload"
-            className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Upload
-          </Link>
         </header>
 
         <div className="flex-1">
