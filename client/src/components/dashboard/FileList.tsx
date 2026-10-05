@@ -48,7 +48,7 @@ const FileList = ({
 
   return (
     <div>
-      <div className="hidden items-center gap-3 border-b bg-muted/30 px-5 py-2 text-xs font-medium text-muted-foreground sm:flex">
+      <div className="hidden items-center gap-12 border-b bg-muted/30 px-5 py-2 text-xs font-medium text-muted-foreground sm:flex">
         <span className="flex-1">Name</span>
         <span className="w-24 text-right">Size</span>
         <span className="hidden w-32 text-right md:block">

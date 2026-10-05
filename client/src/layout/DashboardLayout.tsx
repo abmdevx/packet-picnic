@@ -1,44 +1,50 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
-import { ChevronRight, Home } from "lucide-react";
+import { Menu } from "lucide-react";
+import { Outlet } from "react-router-dom";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 
-const pageTitles: Record<string, string> = {
-  "/dashboard": "My Files",
-  "/dashboard/trash": "Trash",
-};
-
 const DashboardLayout = () => {
-  const { pathname } = useLocation();
-  const title = pageTitles[pathname] ?? "Dashboard";
-
   return (
-    <main className="flex min-h-screen bg-background">
-      <DashboardSidebar />
+    <div className="min-h-screen bg-background">
+      {/* Desktop Sidebar */}
+      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r bg-card md:block">
+        <DashboardSidebar />
+      </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b bg-background/95 px-4 backdrop-blur sm:px-6">
-          <div className="flex items-center gap-2 text-sm">
-            <Link
-              to="/"
-              className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-              title="Home"
-            >
-              <Home className="size-4" />
-              <span className="hidden sm:inline">Home</span>
-            </Link>
+      {/* Mobile Header */}
+      <header className="sticky top-0 z-40 flex h-14 items-center border-b bg-background px-4 md:hidden">
+        <Sheet>
+          <SheetTrigger>
+            <Menu className="size-5" />
+          </SheetTrigger>
 
-            <ChevronRight className="size-4 text-muted-foreground" />
+          <SheetContent side="left" className="w-64 p-0">
+            <SheetHeader className="border-b px-4 py-4">
+              <SheetTitle>Packet Picnic</SheetTitle>
+            </SheetHeader>
 
-            <span className="font-medium">{title}</span>
-          </div>
-        </header>
+            <DashboardSidebar />
+          </SheetContent>
+        </Sheet>
 
-        <div className="flex-1">
-          <Outlet />
+        <div className="ml-3 text-sm font-semibold">
+          Packet Picnic
         </div>
-      </div>
-    </main>
+      </header>
+
+      {/* Main Content */}
+      <main className="min-h-screen md:ml-64">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 
