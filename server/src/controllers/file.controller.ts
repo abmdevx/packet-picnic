@@ -139,6 +139,7 @@ export const getAllFiles = asyncHandler(
 
     const files = await File.find({
       owner: req.user._id,
+      isTrashed: false,
     })
       .sort({ createdAt: -1 })
       .select(
@@ -150,6 +151,40 @@ export const getAllFiles = asyncHandler(
         200,
         files,
         "Files fetched successfully"
+      )
+    );
+  }
+);
+
+export const moveFilesToTrash = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const { fileIds } = req.body;
+
+    const result = await File.updateMany(
+      {
+        uniqueId: { $in: fileIds },
+        owner: req.user._id,
+        isTrashed: false,
+      },
+      {
+        $set: {
+          isTrashed: true,
+          trashedAt: new Date(),
+        },
+      }
+    );
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          modifiedCount: result.modifiedCount,
+        },
+        "File(s) moved to trash successfully"
       )
     );
   }

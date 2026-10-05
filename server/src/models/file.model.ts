@@ -11,6 +11,8 @@ export interface IFile extends Document {
   uniqueId: string;
   downloadCount: number;
   owner: Types.ObjectId;
+  isTrashed: boolean;
+  trashedAt: Date | null;
 }
 
 const fileSchema = new Schema<IFile>(
@@ -60,6 +62,16 @@ const fileSchema = new Schema<IFile>(
     downloadCount: {
       type: Number,
       default: 0,
+    },
+
+    isTrashed: {
+      type: Boolean,
+      default: false,
+    },
+
+    trashedAt: {
+      type: Date,
+      default: null,
     },
 
     owner: {
