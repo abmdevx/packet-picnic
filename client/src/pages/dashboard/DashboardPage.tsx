@@ -27,6 +27,7 @@ const DashboardPage = () => {
 
   const {
     getAllFiles,
+    downloadFile,
     allFiles,
     loading,
     error,
@@ -109,17 +110,8 @@ const DashboardPage = () => {
   /*
    * Download
    */
-  const handleDownload = (file: FileItem) => {
-    if (!file.storageUrl) {
-      toast.error("Download URL is not available.");
-      return;
-    }
-
-    window.open(
-      file.storageUrl,
-      "_blank",
-      "noopener,noreferrer"
-    );
+  const handleDownload = async (file: FileItem) => {
+    await downloadFile(file.uniqueId);
   };
 
   return (
