@@ -7,11 +7,13 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
+
 import {
   Card,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,7 @@ export interface FileItem {
   storageUrl?: string;
   uploadedAt?: string;
   downloadCount?: number;
+  isNew?: boolean;
 }
 
 interface FileCardProps {
@@ -40,9 +43,7 @@ interface FileCardProps {
 }
 
 const formatFileSize = (bytes: number) => {
-  if (bytes < 1000) {
-    return `${bytes} B`;
-  }
+  if (bytes < 1000) return `${bytes} B`;
 
   if (bytes < 1000 * 1000) {
     return `${(bytes / 1000).toFixed(2)} KB`;
@@ -73,12 +74,20 @@ const FileCard = ({
             </div>
 
             <div className="min-w-0">
-              <h3
-                className="truncate font-medium"
-                title={file.originalName}
-              >
-                {file.originalName}
-              </h3>
+              <div className="flex min-w-0 items-center gap-2">
+                <h3
+                  className="min-w-0 truncate font-medium"
+                  title={file.originalName}
+                >
+                  {file.originalName}
+                </h3>
+
+                {file.isNew && (
+                  <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+                    NEW
+                  </span>
+                )}
+              </div>
 
               <p className="mt-1 text-xs text-muted-foreground">
                 {formatFileSize(file.size)}
@@ -87,22 +96,24 @@ const FileCard = ({
           </div>
 
           <DropdownMenu>
-            <DropdownMenuTrigger
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-muted"
-            >
+            <DropdownMenuTrigger className="inline-flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-muted">
               <MoreHorizontal className="size-4" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
               {onCopy && (
-                <DropdownMenuItem onClick={() => onCopy(file)}>
+                <DropdownMenuItem
+                  onClick={() => onCopy(file)}
+                >
                   <Copy className="mr-2 size-4" />
                   Copy link
                 </DropdownMenuItem>
               )}
 
               {onDownload && (
-                <DropdownMenuItem onClick={() => onDownload(file)}>
+                <DropdownMenuItem
+                  onClick={() => onDownload(file)}
+                >
                   <Download className="mr-2 size-4" />
                   Download
                 </DropdownMenuItem>
@@ -113,12 +124,16 @@ const FileCard = ({
                 Share
               </DropdownMenuItem>
 
-              {(onRestore || onPermanentDelete || onDelete) && (
+              {(onRestore ||
+                onPermanentDelete ||
+                onDelete) && (
                 <DropdownMenuSeparator />
               )}
 
               {onRestore && (
-                <DropdownMenuItem onClick={() => onRestore(file)}>
+                <DropdownMenuItem
+                  onClick={() => onRestore(file)}
+                >
                   <RotateCcw className="mr-2 size-4" />
                   Restore
                 </DropdownMenuItem>
@@ -127,7 +142,9 @@ const FileCard = ({
               {onPermanentDelete && (
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"
-                  onClick={() => onPermanentDelete(file)}
+                  onClick={() =>
+                    onPermanentDelete(file)
+                  }
                 >
                   <Trash2 className="mr-2 size-4" />
                   Delete permanently
@@ -152,7 +169,9 @@ const FileCard = ({
         <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
           <span>
             {file.uploadedAt
-              ? new Date(file.uploadedAt).toLocaleDateString()
+              ? new Date(
+                  file.uploadedAt
+                ).toLocaleDateString()
               : "Recently uploaded"}
           </span>
 

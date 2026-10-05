@@ -9,7 +9,9 @@ import {
   RotateCcw,
   Trash2,
 } from "lucide-react";
+
 import { toast } from "sonner";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import type { FileItem } from "./FileCard";
 
 interface FileRowProps {
@@ -29,9 +32,7 @@ interface FileRowProps {
 }
 
 const formatFileSize = (bytes: number) => {
-  if (bytes < 1000) {
-    return `${bytes} B`;
-  }
+  if (bytes < 1000) return `${bytes} B`;
 
   if (bytes < 1_000_000) {
     return `${(bytes / 1000).toFixed(2)} KB`;
@@ -45,13 +46,9 @@ const formatFileSize = (bytes: number) => {
 };
 
 const getFileIcon = (mimeType: string) => {
-  if (mimeType.startsWith("image/")) {
-    return FileImage;
-  }
+  if (mimeType.startsWith("image/")) return FileImage;
 
-  if (mimeType === "application/pdf") {
-    return FileText;
-  }
+  if (mimeType === "application/pdf") return FileText;
 
   if (
     mimeType.includes("zip") ||
@@ -91,12 +88,20 @@ const FileRow = ({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p
-          className="truncate text-sm font-medium"
-          title={file.originalName}
-        >
-          {file.originalName}
-        </p>
+        <div className="flex min-w-0 items-center gap-2">
+          <p
+            className="min-w-0 truncate text-sm font-medium"
+            title={file.originalName}
+          >
+            {file.originalName}
+          </p>
+
+          {file.isNew && (
+            <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+              NEW
+            </span>
+          )}
+        </div>
 
         <p className="mt-0.5 text-xs text-muted-foreground sm:hidden">
           {formatFileSize(file.size)}
@@ -109,13 +114,19 @@ const FileRow = ({
 
       <span className="hidden w-32 text-right text-sm text-muted-foreground md:block">
         {file.uploadedAt
-          ? new Date(file.uploadedAt).toLocaleDateString()
+          ? new Date(
+              file.uploadedAt
+            ).toLocaleDateString()
           : "—"}
       </span>
 
       <button
         type="button"
-        onClick={onCopy ? () => onCopy(file) : handleCopy}
+        onClick={
+          onCopy
+            ? () => onCopy(file)
+            : handleCopy
+        }
         title="Copy share link"
         className="hidden rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground sm:inline-flex"
       >
@@ -130,7 +141,11 @@ const FileRow = ({
         <DropdownMenuContent align="end">
           {(onCopy || !onRestore) && (
             <DropdownMenuItem
-              onClick={onCopy ? () => onCopy(file) : handleCopy}
+              onClick={
+                onCopy
+                  ? () => onCopy(file)
+                  : handleCopy
+              }
             >
               <Copy className="mr-2 size-4" />
               Copy link
@@ -138,7 +153,9 @@ const FileRow = ({
           )}
 
           {onDownload && (
-            <DropdownMenuItem onClick={() => onDownload(file)}>
+            <DropdownMenuItem
+              onClick={() => onDownload(file)}
+            >
               <Download className="mr-2 size-4" />
               Download
             </DropdownMenuItem>
@@ -151,12 +168,16 @@ const FileRow = ({
             </DropdownMenuItem>
           )}
 
-          {(onRestore || onPermanentDelete || onDelete) && (
+          {(onRestore ||
+            onPermanentDelete ||
+            onDelete) && (
             <DropdownMenuSeparator />
           )}
 
           {onRestore && (
-            <DropdownMenuItem onClick={() => onRestore(file)}>
+            <DropdownMenuItem
+              onClick={() => onRestore(file)}
+            >
               <RotateCcw className="mr-2 size-4" />
               Restore
             </DropdownMenuItem>
@@ -165,7 +186,9 @@ const FileRow = ({
           {onPermanentDelete && (
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => onPermanentDelete(file)}
+              onClick={() =>
+                onPermanentDelete(file)
+              }
             >
               <Trash2 className="mr-2 size-4" />
               Delete permanently

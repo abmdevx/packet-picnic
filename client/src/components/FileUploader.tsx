@@ -9,7 +9,13 @@ import {
 
 import { useFiles } from "@/hooks/useFiles";
 
-export default function FileUploader() {
+interface FileUploaderProps {
+  onUploadComplete?: (uniqueId: string) => void;
+}
+
+export default function FileUploader({
+  onUploadComplete,
+}: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(
@@ -32,7 +38,11 @@ export default function FileUploader() {
 
     setSelectedFile(file);
 
-    await upload(file);
+    const result = await upload(file);
+
+    if (result) {
+      onUploadComplete?.(result.data.uniqueId);
+    }
   };
 
   const handleChooseFile = () => {

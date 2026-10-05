@@ -18,12 +18,13 @@ import { useFiles } from "@/hooks/useFiles";
 
 const DashboardPage = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
-
   const [files, setFiles] = useState<FileItem[]>([]);
-
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [view, setView] = useState<"list" | "grid">("list");
+  const [newFileId, setNewFileId] = useState<string | null>(
+    null
+  );
 
   const {
     getAllFiles,
@@ -53,10 +54,11 @@ const DashboardPage = () => {
       uploadedAt: file.createdAt,
       downloadCount: file.downloadCount,
       storageUrl: file.storageUrl,
+      isNew: file.uniqueId === newFileId,
     }));
 
     setFiles(formattedFiles);
-  }, [allFiles]);
+  }, [allFiles, newFileId]);
 
   /*
    * Search + Sort
@@ -121,6 +123,25 @@ const DashboardPage = () => {
    */
   const handleDownload = async (file: FileItem) => {
     await downloadFile(file.uniqueId);
+  };
+
+  /*
+   * Upload completed
+   */
+  const handleUploadComplete = async (uniqueId: string) => {
+    // Close upload dialog
+    setUploadOpen(false);
+
+    // Fetch latest files from backend
+    await getAllFiles();
+
+    // Mark uploaded file as new
+    setNewFileId(uniqueId);
+
+    // Remove NEW badge after 5 seconds
+    setTimeout(() => {
+      setNewFileId(null);
+    }, 5000);
   };
 
   return (
@@ -200,7 +221,9 @@ const DashboardPage = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <FileUploader />
+          <FileUploader
+            onUploadComplete={handleUploadComplete}
+          />
         </DialogContent>
       </Dialog>
     </section>
