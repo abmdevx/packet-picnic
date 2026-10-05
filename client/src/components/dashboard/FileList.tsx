@@ -1,13 +1,14 @@
 import { FileX } from "lucide-react";
-
 import FileRow from "./FileRow";
 import FileCard, { type FileItem } from "./FileCard";
 
 interface FileListProps {
   files: FileItem[];
   view: "list" | "grid";
-  onDelete: (file: FileItem) => void;
-  onDownload: (file: FileItem) => void;
+  onDelete?: (file: FileItem) => void;
+  onDownload?: (file: FileItem) => void;
+  onRestore?: (file: FileItem) => void;
+  onPermanentDelete?: (file: FileItem) => void;
 }
 
 const FileList = ({
@@ -15,6 +16,8 @@ const FileList = ({
   view,
   onDelete,
   onDownload,
+  onRestore,
+  onPermanentDelete,
 }: FileListProps) => {
   if (files.length === 0) {
     return (
@@ -24,6 +27,7 @@ const FileList = ({
         </div>
 
         <h3 className="font-semibold">No files found</h3>
+
         <p className="mt-1 text-sm text-muted-foreground">
           Upload a file or try a different search.
         </p>
@@ -40,6 +44,8 @@ const FileList = ({
             file={file}
             onDelete={onDelete}
             onDownload={onDownload}
+            onRestore={onRestore}
+            onPermanentDelete={onPermanentDelete}
           />
         ))}
       </div>
@@ -50,10 +56,13 @@ const FileList = ({
     <div>
       <div className="hidden items-center gap-12 border-b bg-muted/30 px-5 py-2 text-xs font-medium text-muted-foreground sm:flex">
         <span className="flex-1">Name</span>
+
         <span className="w-24 text-right">Size</span>
+
         <span className="hidden w-32 text-right md:block">
           Uploaded
         </span>
+
         <span className="w-9" />
       </div>
 
@@ -63,6 +72,8 @@ const FileList = ({
           file={file}
           onDelete={onDelete}
           onDownload={onDownload}
+          onRestore={onRestore}
+          onPermanentDelete={onPermanentDelete}
         />
       ))}
     </div>

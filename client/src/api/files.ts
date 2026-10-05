@@ -86,8 +86,20 @@ export const files = {
     return response.data;
   },
 
-  put: async (id: string, data: unknown) => {
-    const response = await api.put(`/files/${id}`, data);
+  updateTrashStatus: async (
+    fileIds: string[],
+    isTrashed: boolean
+  ) => {
+    const response = await api.patch("/files/update-trash-status", {
+      fileIds,
+      isTrashed,
+    });
+
+    return response.data;
+  },
+
+  getTrashFiles: async () => {
+    const response = await api.get("/files/get-trash-files");
     return response.data;
   },
 

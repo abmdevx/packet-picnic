@@ -3,10 +3,10 @@ import {
   Download,
   File,
   MoreHorizontal,
+  RotateCcw,
   Share2,
   Trash2,
 } from "lucide-react";
-
 import {
   Card,
   CardContent,
@@ -35,6 +35,8 @@ interface FileCardProps {
   onCopy?: (file: FileItem) => void;
   onDownload?: (file: FileItem) => void;
   onDelete?: (file: FileItem) => void;
+  onRestore?: (file: FileItem) => void;
+  onPermanentDelete?: (file: FileItem) => void;
 }
 
 const formatFileSize = (bytes: number) => {
@@ -58,6 +60,8 @@ const FileCard = ({
   onCopy,
   onDownload,
   onDelete,
+  onRestore,
+  onPermanentDelete,
 }: FileCardProps) => {
   return (
     <Card className="group overflow-hidden transition-shadow hover:shadow-md">
@@ -84,36 +88,61 @@ const FileCard = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger
-                className="inline-flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-muted"
-                >
-                <MoreHorizontal className="size-4" />
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-muted"
+            >
+              <MoreHorizontal className="size-4" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onCopy?.(file)}>
-                <Copy className="mr-2 size-4" />
-                Copy link
-              </DropdownMenuItem>
+              {onCopy && (
+                <DropdownMenuItem onClick={() => onCopy(file)}>
+                  <Copy className="mr-2 size-4" />
+                  Copy link
+                </DropdownMenuItem>
+              )}
 
-              <DropdownMenuItem onClick={() => onDownload?.(file)}>
-                <Download className="mr-2 size-4" />
-                Download
-              </DropdownMenuItem>
+              {onDownload && (
+                <DropdownMenuItem onClick={() => onDownload(file)}>
+                  <Download className="mr-2 size-4" />
+                  Download
+                </DropdownMenuItem>
+              )}
 
               <DropdownMenuItem>
                 <Share2 className="mr-2 size-4" />
                 Share
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator />
+              {(onRestore || onPermanentDelete || onDelete) && (
+                <DropdownMenuSeparator />
+              )}
 
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => onDelete?.(file)}
-              >
-                <Trash2 className="mr-2 size-4" />
-                Delete
-              </DropdownMenuItem>
+              {onRestore && (
+                <DropdownMenuItem onClick={() => onRestore(file)}>
+                  <RotateCcw className="mr-2 size-4" />
+                  Restore
+                </DropdownMenuItem>
+              )}
+
+              {onPermanentDelete && (
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => onPermanentDelete(file)}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete permanently
+                </DropdownMenuItem>
+              )}
+
+              {onDelete && (
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => onDelete(file)}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -28,6 +28,7 @@ const DashboardPage = () => {
   const {
     getAllFiles,
     downloadFile,
+    updateTrashStatus,
     allFiles,
     loading,
     error,
@@ -95,16 +96,24 @@ const DashboardPage = () => {
   /*
    * Delete
    */
-  const handleDelete = (file: FileItem) => {
-    setFiles((current) =>
-      current.filter(
-        (item) => item.uniqueId !== file.uniqueId
-      )
-    );
+  const handleDelete = async (file: FileItem) => {
+    try {
+      await updateTrashStatus([file.uniqueId], true);
 
-    toast.success(
-      `${file.originalName} removed from this view.`
-    );
+      setFiles((current) =>
+        current.filter(
+          (item) => item.uniqueId !== file.uniqueId
+        )
+      );
+
+      toast.success(
+        `${file.originalName} moved to trash.`
+      );
+    } catch {
+      toast.error(
+        `Failed to move ${file.originalName} to trash.`
+      );
+    }
   };
 
   /*

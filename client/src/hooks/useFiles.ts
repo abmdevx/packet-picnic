@@ -19,6 +19,7 @@ export function useFiles() {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [file, setFile] = useState<FileData | null>(null);
   const [allFiles, setAllFiles] = useState<FileData[]>([]);
+  const [trashFiles, setTrashFiles] = useState<FileData[]>([]);
 
   const upload = async (file: File) => {
     try {
@@ -107,10 +108,60 @@ export function useFiles() {
     }
   };
 
+  const updateTrashStatus = async (
+    fileIds: string[],
+    isTrashed: boolean
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await files.updateTrashStatus(
+        fileIds,
+        isTrashed
+      );
+
+      return result;
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update file status"
+      );
+
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTrashFiles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await files.getTrashFiles();
+
+      setTrashFiles(result.data);
+
+      return result;
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch trash files"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     upload,
     getFile,
     getAllFiles,
+    getTrashFiles,
+    updateTrashStatus,
     downloadFile,
     loading,
     progress,
@@ -118,5 +169,6 @@ export function useFiles() {
     fileUrl,
     file,
     allFiles,
+    trashFiles
   };
 }

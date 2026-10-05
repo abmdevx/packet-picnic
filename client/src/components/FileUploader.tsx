@@ -1,18 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
   Alert,
   AlertDescription,
 } from "@/components/ui/alert";
-
-import {
-  saveFile,
-  type StoredFile,
-  getFiles,
-} from "@/utils/storage";
 
 import { useFiles } from "@/hooks/useFiles";
 
@@ -23,33 +16,12 @@ export default function FileUploader() {
     null
   );
 
-  const [copiedFileId, setCopiedFileId] = useState<string | null>(
-    null
-  );
-
-  const [storedFiles, setStoredFiles] = useState<StoredFile[]>([]);
-
   const {
     upload,
     loading,
     progress,
     error,
   } = useFiles();
-
-  useEffect(() => {
-    const files = getFiles();
-    setStoredFiles(files);
-  }, []);
-
-  const handleCopy = async (file: StoredFile) => {
-    await navigator.clipboard.writeText(file.url);
-
-    setCopiedFileId(file.id);
-
-    setTimeout(() => {
-      setCopiedFileId(null);
-    }, 2000);
-  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -60,21 +32,7 @@ export default function FileUploader() {
 
     setSelectedFile(file);
 
-    const result = await upload(file);
-
-    if (result) {
-      const newFile = {
-        id: result.data.uniqueId,
-        originalName: file.name,
-        url: result.data.shareUrl,
-        size: file.size,
-        uploadedAt: new Date().toISOString(),
-      };
-
-      saveFile(newFile);
-
-      setStoredFiles((prev) => [...prev, newFile]);
-    }
+    await upload(file);
   };
 
   const handleChooseFile = () => {
@@ -136,44 +94,8 @@ export default function FileUploader() {
       {/* Error */}
       {error && (
         <Alert variant="destructive">
-          <AlertDescription>
-            {error}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
-      )}
-
-      {/* Uploaded Files */}
-      {storedFiles.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-sm font-medium">
-            Uploaded files
-          </p>
-
-          {storedFiles.map((file) => (
-            <div
-              key={file.id}
-              className="flex items-center gap-3 rounded-lg border p-3"
-            >
-              <span
-                className="min-w-0 flex-1 truncate text-sm"
-                title={file.originalName}
-              >
-                {file.originalName}
-              </span>
-
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => handleCopy(file)}
-              >
-                {copiedFileId === file.id
-                  ? "Copied!"
-                  : "Copy"}
-              </Button>
-            </div>
-          ))}
-        </div>
       )}
     </div>
   );

@@ -20,8 +20,10 @@ export const fileSchema = z.object({
     .min(1, "Cloudinary resource type is required"),
 });
 
-export const fileIdsSchema = z.object({
+export const fileTrashSchema = z.object({
   fileIds: z
     .array(z.string().min(1))
     .min(1, "At least one file ID is required"),
+
+  isTrashed: z.boolean(),
 });

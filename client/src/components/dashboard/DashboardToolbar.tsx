@@ -6,21 +6,17 @@ import {
   List,
   LayoutGrid,
 } from "lucide-react";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface DashboardToolbarProps {
   search: string;
   onSearchChange: (value: string) => void;
-
   sort: string;
   onSortChange: (value: string) => void;
-
   view: "list" | "grid";
   onViewChange: (value: "list" | "grid") => void;
-
-  onUpload: () => void;
+  onUpload?: () => void;
 }
 
 const DashboardToolbar = ({
@@ -97,10 +93,12 @@ const DashboardToolbar = ({
         </div>
 
         {/* Upload */}
-        <Button onClick={onUpload}>
-          <Upload className="mr-2 size-4" />
-          Upload
-        </Button>
+        {onUpload && (
+          <Button onClick={onUpload}>
+            <Upload className="mr-2 size-4" />
+            Upload
+          </Button>
+        )}
       </div>
     </div>
   );
