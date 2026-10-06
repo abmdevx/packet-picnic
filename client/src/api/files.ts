@@ -103,8 +103,11 @@ export const files = {
     return response.data;
   },
 
-  delete: async (id: string) => {
-    const response = await api.delete(`/files/${id}`);
+  permanentlyDelete: async (fileIds: string[]) => {
+    const response = await api.delete("/files/permanent", {
+      data: { fileIds },
+    });
+
     return response.data;
   },
 };

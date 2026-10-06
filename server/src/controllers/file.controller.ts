@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
+import { deleteFromCloudinary } from "../utils/cloudinary.js";
 import { generateUploadSignature, generateDownloadUrl } from "../utils/cloudinary.js";
 import { File } from "../models/file.model.js";
 
@@ -211,6 +212,49 @@ export const getTrashFiles = asyncHandler(
         200,
         files,
         "Trash files fetched successfully"
+      )
+    );
+  }
+);
+
+export const permanentlyDeleteFiles = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const { fileIds } = req.body;
+
+    const files = await File.find({
+      uniqueId: { $in: fileIds },
+      owner: req.user._id,
+      isTrashed: true,
+    });
+
+    if (files.length === 0) {
+      throw new ApiError(404, "No files found in trash");
+    }
+
+    for (const file of files) {
+      await deleteFromCloudinary(
+        file.cloudinaryPublicId,
+        file.cloudinaryResourceType
+      );
+    }
+
+    const result = await File.deleteMany({
+      uniqueId: { $in: fileIds },
+      owner: req.user._id,
+      isTrashed: true,
+    });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          deletedCount: result.deletedCount,
+        },
+        "File(s) permanently deleted successfully"
       )
     );
   }

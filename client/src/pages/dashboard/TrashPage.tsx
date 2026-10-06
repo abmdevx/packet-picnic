@@ -3,6 +3,17 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import DashboardToolbar from "@/components/dashboard/DashboardToolbar";
 import FileList from "@/components/dashboard/FileList";
 import type { FileItem } from "@/components/dashboard/FileCard";
@@ -14,9 +25,12 @@ const TrashPage = () => {
   const [sort, setSort] = useState("newest");
   const [view, setView] = useState<"list" | "grid">("list");
 
+  const [deleteFile, setDeleteFile] = useState<FileItem | null>(null);
+
   const {
     getTrashFiles,
     updateTrashStatus,
+    permanentlyDeleteFiles,
     trashFiles,
     loading,
   } = useFiles();
@@ -41,9 +55,7 @@ const TrashPage = () => {
 
   const filteredFiles = useMemo(() => {
     const result = files.filter((file) =>
-      file.originalName
-        .toLowerCase()
-        .includes(search.toLowerCase())
+      file.originalName.toLowerCase().includes(search.toLowerCase())
     );
 
     return [...result].sort((a, b) => {
@@ -83,6 +95,30 @@ const TrashPage = () => {
     } catch {
       toast.error(
         `Failed to restore ${file.originalName}.`
+      );
+    }
+  };
+
+  const handlePermanentDelete = async () => {
+    if (!deleteFile) return;
+
+    try {
+      await permanentlyDeleteFiles([deleteFile.uniqueId]);
+
+      setFiles((current) =>
+        current.filter(
+          (item) => item.uniqueId !== deleteFile.uniqueId
+        )
+      );
+
+      toast.success(
+        `${deleteFile.originalName} permanently deleted.`
+      );
+
+      setDeleteFile(null);
+    } catch {
+      toast.error(
+        `Failed to permanently delete ${deleteFile.originalName}.`
       );
     }
   };
@@ -137,9 +173,49 @@ const TrashPage = () => {
             files={filteredFiles}
             view={view}
             onRestore={handleRestore}
+            onPermanentDelete={setDeleteFile}
           />
         )}
       </div>
+
+      {/* Permanent Delete Confirmation */}
+      <AlertDialog
+        open={!!deleteFile}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteFile(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Permanently delete this file?
+            </AlertDialogTitle>
+
+            <AlertDialogDescription>
+              <span className="font-medium text-foreground">
+                {deleteFile?.originalName}
+              </span>{" "}
+              will be permanently deleted from your account and
+              Cloudinary. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              Cancel
+            </AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={handlePermanentDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete permanently
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 };

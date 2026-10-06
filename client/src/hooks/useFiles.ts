@@ -156,12 +156,32 @@ export function useFiles() {
     }
   };
 
+  const permanentlyDeleteFiles = async (fileIds: string[]) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await files.permanentlyDelete(fileIds);
+
+      return result;
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to permanently delete files"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     upload,
     getFile,
     getAllFiles,
     getTrashFiles,
     updateTrashStatus,
+    permanentlyDeleteFiles,
     downloadFile,
     loading,
     progress,
