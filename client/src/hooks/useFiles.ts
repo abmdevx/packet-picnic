@@ -170,6 +170,7 @@ export function useFiles() {
           ? error.message
           : "Failed to permanently delete files"
       );
+      throw error;
     } finally {
       setLoading(false);
     }
