@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  Upload files, store them securely, and share them instantly with a unique link.
+  Upload files, store them securely, manage them from your dashboard, and share them instantly with unique links.
 </p>
 
 ---
@@ -17,14 +17,16 @@
 ## ✨ Features
 
 * 📤 **File Uploads** — Upload files directly to cloud storage.
-* ☁️ **Cloudinary Storage** — Reliable cloud-based file storage.
-* 🔗 **Shareable Links** — Generate unique links for every uploaded file.
-* 📥 **File Downloads** — Download shared files through generated download URLs.
-* 🔐 **Authentication** — Protected dashboard and user-specific files.
-* 📊 **File Dashboard** — View uploaded files and download statistics.
-* 🗑️ **Trash Management** — Manage deleted files from the dashboard.
-* ⚡ **Fast & Responsive UI** — Modern interface built with React and Tailwind CSS.
-* 🔒 **Server-Side Secrets** — Sensitive Cloudinary operations are handled by the backend.
+* ☁️ **Cloudinary Storage** — Store uploaded files securely using Cloudinary.
+* 🔗 **Shareable Links** — Generate a unique link for every uploaded file.
+* 📥 **File Downloads** — Download shared files through secure generated URLs.
+* 🔐 **Authentication** — Google authentication with protected user-specific resources.
+* 📊 **File Dashboard** — View, search, sort, and manage uploaded files.
+* 🗑️ **Trash Management** — Move files to trash and restore them when needed.
+* ❌ **Permanent Deletion** — Permanently remove files from Cloudinary and MongoDB.
+* 📱 **Responsive UI** — Clean interface designed for desktop and mobile screens.
+* ⚡ **Fast Frontend** — Built with React, Vite, TypeScript, and Tailwind CSS.
+* 🔒 **Server-Side Secrets** — Sensitive Cloudinary credentials and operations remain on the backend.
 
 ---
 
@@ -40,6 +42,7 @@
 * React Router
 * Axios
 * Lucide React
+* Sonner
 
 ### Backend
 
@@ -49,7 +52,8 @@
 * MongoDB
 * Mongoose
 * Cloudinary
-* JWT Authentication
+* JWT
+* Zod
 * Nanoid
 
 ---
@@ -57,56 +61,73 @@
 ## 🏗️ Architecture
 
 ```text
-┌─────────────────────┐
-│      React App      │
-│  Vite + TypeScript  │
-└──────────┬──────────┘
-           │
-           │ REST API
-           ▼
-┌─────────────────────┐
-│   Express Backend   │
-│     TypeScript      │
-└───────┬───────┬─────┘
-        │       │
-        │       │
-        ▼       ▼
-   ┌────────┐ ┌────────────┐
-   │ MongoDB│ │ Cloudinary │
-   └────────┘ └────────────┘
+┌─────────────────────────┐
+│       React Client      │
+│   Vite + TypeScript     │
+└────────────┬────────────┘
+             │
+             │ REST API
+             ▼
+┌─────────────────────────┐
+│    Express Backend      │
+│      TypeScript         │
+└───────┬─────────┬───────┘
+        │         │
+        ▼         ▼
+ ┌──────────┐ ┌────────────┐
+ │ MongoDB  │ │ Cloudinary │
+ │ Metadata │ │   Files    │
+ └──────────┘ └────────────┘
 ```
+
+The frontend handles the user interface and file-management experience, while the backend manages authentication, authorization, file metadata, Cloudinary signatures, and protected file operations.
 
 ---
 
 ## 📂 Project Structure
 
+The project is organized as a client-server monorepo:
+
 ```text
 packet-picnic/
 │
 ├── client/
+│   ├── public/
 │   ├── src/
 │   │   ├── api/
 │   │   ├── components/
 │   │   ├── hooks/
 │   │   ├── layout/
+│   │   ├── lib/
 │   │   ├── pages/
-│   │   └── App.tsx
+│   │   ├── context/
+│   │   ├── types/
+│   │   ├── utils/
+│   │   ├── App.tsx
+│   │   └── main.tsx
 │   │
-│   └── package.json
+│   ├── package.json
+│   └── vite.config.ts
 │
 ├── server/
 │   ├── src/
+│   │   ├── config/
 │   │   ├── controllers/
 │   │   ├── middlewares/
 │   │   ├── models/
 │   │   ├── routes/
+│   │   ├── schemas/
 │   │   ├── utils/
-│   │   └── app.ts
+│   │   ├── app.ts
+│   │   └── server.ts
 │   │
-│   └── package.json
+│   ├── package.json
+│   └── tsconfig.json
 │
 └── README.md
 ```
+
+> The structure above highlights the main application directories rather than listing every individual component and utility file.
 
 ---
 
@@ -134,20 +155,22 @@ npm install
 
 ### 3. Configure environment variables
 
-Create `.env` files for the frontend and backend.
+Create a `.env` file inside both `client` and `server`.
 
-#### Client
+### Client
 
 ```env
 VITE_API_URL=http://localhost:8000/api/v1
+
 VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
 VITE_CLOUDINARY_API_KEY=your_api_key
 ```
 
-#### Server
+### Server
 
 ```env
 PORT=8000
+
 CLIENT_URL=http://localhost:5173
 
 MONGODB_URI=your_mongodb_connection_string
@@ -159,7 +182,7 @@ CLOUDINARY_API_SECRET=your_api_secret
 JWT_SECRET=your_jwt_secret
 ```
 
-> Never expose `CLOUDINARY_API_SECRET` or other server-side secrets in the frontend.
+> **Important:** Never expose `CLOUDINARY_API_SECRET`, `JWT_SECRET`, or other server-side secrets in the frontend.
 
 ---
 
@@ -172,7 +195,7 @@ cd server
 npm run dev
 ```
 
-The API will run on:
+The API will run at:
 
 ```text
 http://localhost:8000
@@ -180,7 +203,7 @@ http://localhost:8000
 
 ### Start the frontend
 
-In another terminal:
+Open another terminal:
 
 ```bash
 cd client
@@ -195,7 +218,7 @@ http://localhost:5173
 
 ---
 
-## 🔄 How It Works
+## 🔄 How File Upload Works
 
 ```text
 User
@@ -204,25 +227,25 @@ User
 Select File
   │
   ▼
-React Frontend
+React Client
   │
-  ├── Requests upload signature
-  │
+  │ Request upload signature
   ▼
 Express Backend
   │
-  ├── Generates secure signature
-  │
+  │ Generate signed request
   ▼
 Cloudinary
   │
-  ├── Stores uploaded file
+  │ Store file
+  ▼
+React Client
   │
+  │ Send uploaded file metadata
   ▼
 Express Backend
   │
-  ├── Saves file metadata
-  │
+  │ Save metadata
   ▼
 MongoDB
   │
@@ -230,7 +253,7 @@ MongoDB
 Unique Share Link
 ```
 
-Each uploaded file receives a unique identifier that can be used to access its sharing page.
+Each uploaded file receives a unique identifier generated with `nanoid`.
 
 Example:
 
@@ -240,19 +263,78 @@ http://localhost:5173/files/abc123xyz
 
 ---
 
-## 🔐 Security
+## 🗑️ Trash & File Lifecycle
 
-Packet Picnic keeps sensitive operations on the server wherever possible.
+Packet Picnic uses a soft-delete approach for normal deletion.
 
-* Cloudinary API secrets are stored on the backend.
-* Upload signatures are generated server-side.
-* Protected dashboard routes require authentication.
-* File ownership is associated with authenticated users.
-* Unique file identifiers are generated using `nanoid`.
+```text
+Active File
+    │
+    │ Delete
+    ▼
+  Trash
+    │
+    ├───────────────┐
+    │               │
+    │ Restore       │ Permanent Delete
+    ▼               ▼
+Active File     Cloudinary
+                    │
+                    ▼
+                 MongoDB
+```
+
+When a file is moved to trash:
+
+* The file remains in Cloudinary.
+* Its MongoDB record remains.
+* `isTrashed` is set to `true`.
+* The file is hidden from the main dashboard.
+
+When a file is restored:
+
+* `isTrashed` is set back to `false`.
+* The file becomes visible again in the dashboard.
+
+When permanently deleted:
+
+* The Cloudinary asset is deleted.
+* The MongoDB metadata is deleted.
+* The operation cannot be undone.
+
+---
+
+## 🔐 Authentication & Security
+
+Packet Picnic protects user-specific resources through authentication and authorization.
+
+Security measures include:
+
+* Google authentication.
+* JWT-based authentication.
+* Protected dashboard APIs.
+* Authenticated file ownership.
+* Server-side Cloudinary signatures.
+* Server-side Cloudinary deletion.
+* Server-side Cloudinary API secret.
+* Zod request validation.
+* Unique file identifiers using `nanoid`.
+* User ownership checks before modifying or permanently deleting files.
+
+The backend verifies that a file belongs to the authenticated user before allowing protected file-management operations.
 
 ---
 
 ## 📡 API Overview
+
+### Authentication
+
+| Method | Endpoint              | Description                |
+| ------ | --------------------- | -------------------------- |
+| `POST` | `/api/v1/auth/google` | Authenticate with Google   |
+| `GET`  | `/api/v1/auth/me`     | Get the authenticated user |
+
+### File Upload & Sharing
 
 | Method | Endpoint                           | Description                          |
 | ------ | ---------------------------------- | ------------------------------------ |
@@ -260,22 +342,89 @@ Packet Picnic keeps sensitive operations on the server wherever possible.
 | `POST` | `/api/v1/files`                    | Save uploaded file metadata          |
 | `GET`  | `/api/v1/files/:uniqueId`          | Get shared file information          |
 | `GET`  | `/api/v1/files/:uniqueId/download` | Generate download URL                |
-| `GET`  | `/api/v1/files/get-all-files`      | Get authenticated user's files       |
+
+### File Management
+
+| Method   | Endpoint                            | Description                           |
+| -------- | ----------------------------------- | ------------------------------------- |
+| `GET`    | `/api/v1/files/get-all-files`       | Get authenticated user's active files |
+| `GET`    | `/api/v1/files/get-trash-files`     | Get authenticated user's trash files  |
+| `PATCH`  | `/api/v1/files/update-trash-status` | Move files to trash or restore them   |
+| `DELETE` | `/api/v1/files/permanent`           | Permanently delete files              |
+
+> Protected endpoints require authentication.
 
 ---
 
-## 🎨 UI
+## 🎨 User Interface
 
-Packet Picnic uses a clean, minimal interface designed around quick file sharing.
+Packet Picnic provides a clean and minimal interface focused on quick file management and sharing.
 
-The main areas include:
+### Main areas
 
-* Landing page
-* Authentication
-* Dashboard
-* File list
-* Shared file page
+* 🏠 Landing page
+* 🔐 Authentication
+* 📊 Dashboard
+* 📁 My Files
+* 🔗 Shared File Page
+* 🗑️ Trash
+* 📤 Upload Dialog
+* 📱 Responsive navigation
+
+The dashboard supports:
+
+* List view
+* Grid view
+* File search
+* File sorting
+* File upload
+* File download
+* Share-link copying
 * Trash management
+* File restoration
+* Permanent deletion
+
+---
+
+## ☁️ Cloudinary Integration
+
+Packet Picnic uses Cloudinary for file storage.
+
+The upload process uses a server-generated signature so that the Cloudinary API secret never needs to be exposed to the frontend.
+
+Cloudinary stores the uploaded asset while MongoDB stores the associated metadata, including:
+
+```text
+originalName
+storedName
+mimeType
+size
+storageUrl
+cloudinaryPublicId
+cloudinaryResourceType
+uniqueId
+downloadCount
+owner
+isTrashed
+trashedAt
+```
+
+---
+
+## 📊 File Metadata
+
+Each uploaded file is associated with metadata stored in MongoDB.
+
+This allows Packet Picnic to provide:
+
+* File ownership
+* File search
+* File sorting
+* Download statistics
+* Trash management
+* File restoration
+* Permanent deletion
+* Unique sharing links
 
 ---
 
@@ -283,7 +432,22 @@ The main areas include:
 
 **In Development**
 
-Packet Picnic is an actively developed full-stack project. New features and improvements are being added as development continues.
+Packet Picnic is an actively developed full-stack project built for learning, experimentation, and portfolio development.
+
+Current functionality includes:
+
+* Authentication
+* File uploads
+* Cloudinary storage
+* File sharing
+* File downloads
+* Dashboard
+* Search and sorting
+* List and grid views
+* Trash management
+* File restoration
+* Permanent deletion
+* Responsive UI
 
 ---
 
